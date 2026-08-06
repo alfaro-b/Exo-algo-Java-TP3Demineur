@@ -4,14 +4,18 @@ import java.util.Scanner;
 public class Minesweeper {
 
 	public static void main(String[] args) {
-		int[][] initialGrid = createGrid(6, 12);
-		placeBombs(9, initialGrid);
+		// Grille de jeu
+		int[][] gameGrid = createGrid(6, 12);
+		placeBombs(9, gameGrid);
 		
-		displayGrid(initialGrid);
+		// Grille affichée au joueur
+		int[][] visibleGrid = createGrid(6, 12);
+		initializeVisibleGrid(visibleGrid);
+		displayGrid(visibleGrid);
 		
 		Scanner userInput = new Scanner(System.in);
 		
-		int[] coordinates = askCoordinates(userInput, initialGrid);
+		int[] coordinates = askCoordinates(userInput, gameGrid);
 
 		System.out.println("Ligne : " + coordinates[0]);
 		System.out.println("Colonne : " + coordinates[1]);
@@ -71,6 +75,19 @@ public class Minesweeper {
 	}
 	
 	/**
+	 *  Initialise la grille de jeu qui sera affichée
+	 *  @param grid Grille de jeu affichée
+	 */
+	public static void initializeVisibleGrid(int[][] visibleGrid) {
+		// On met -2 dans toutes les cases
+	    for (int row = 0; row < visibleGrid.length; row++) {
+	        for (int column = 0; column < visibleGrid[row].length; column++) {
+	            visibleGrid[row][column] = -2;
+	        }
+	    }
+	}
+	
+	/**
 	 *  Affiche la grille de jeu
 	 *  @param grid Grille de jeu
 	 */
@@ -90,7 +107,9 @@ public class Minesweeper {
 			System.out.printf("%c", rowHeader);
 						
 			for (int column = 0; column <grid[row].length; column++) {
-				if (grid[row][column] == -1) {
+				if (grid[row][column] == -2) {
+				    System.out.printf("%4s", "?");
+				} else if (grid[row][column] == -1) {
 					System.out.printf("%4s", "*");
 				} else {
 					System.out.printf("%4s", (grid[row][column]));
