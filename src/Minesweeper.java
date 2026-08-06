@@ -38,6 +38,22 @@ public class Minesweeper {
 	 *  @param grid Grille de jeu
 	 */
 	public static void placeBombs(int bombsNumber, int[][] grid) {
+		
+		// Vérifie que la grille est valide.
+		if (grid == null || grid.length == 0 || grid[0].length == 0) {
+	        System.out.println("La grille est invalide.");
+	        return;
+	    }
+
+		// Vérifie que le nombre de bombes est valide.
+	    int maxBombs = grid.length * grid[0].length;
+
+	    if (bombsNumber < 0 || bombsNumber > maxBombs) {
+	        System.out.println("Le nombre de bombes est invalide.");
+	        return;
+	    }
+		
+	    // Après les vérifications, place les bombes aléatoirement dans la grille.
 		int maxRow = grid.length;
 		int maxColumn = grid[0].length;
 		Random random = new Random();
