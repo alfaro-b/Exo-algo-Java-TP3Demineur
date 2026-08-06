@@ -3,10 +3,14 @@ import java.util.Random;
 public class Minesweeper {
 
 	public static void main(String[] args) {
-		int[][] grid = createGrid(6, 12);
-		placeBombs(9, grid);
+		int[][] initialGrid = createGrid(6, 12);
+		placeBombs(9, initialGrid);
+		
+		displayGrid(initialGrid);
 	}
 	
+	// =================== MÉTHODES ===================
+
 	/**
 	 *  Crée la grille de jeu
 	 *  @param rows Nombre de lignes
@@ -38,6 +42,38 @@ public class Minesweeper {
 			}
 			grid[randomNumRow][randomNumColumn] = -1;
 		}
+	}
+	
+	/**
+	 *  Affiche la grille de jeu
+	 *  @param grid Grille de jeu
+	 */
+	public static void displayGrid(int[][] grid) {
+		
+		// Affiche les en-têtes de colonnes
+		System.out.print(" ");
+		for (int column = 1; column <= grid[0].length; column++) {
+		    System.out.printf("%4d" ,column);
+		}
+		
+		System.out.println();
+		
+		// Affiche chaque ligne avec en-tête de ligne et valeur de chaque colonne
+		for (int row = 0; row < grid.length; row++) {
+			char rowHeader = (char) ('A' + row);
+			System.out.printf("%c", rowHeader);
+						
+			for (int column = 0; column <grid[row].length; column++) {
+				if (grid[row][column] == -1) {
+					System.out.printf("%4s", "*");
+				} else {
+					System.out.printf("%4s", (grid[row][column]));
+				}
+			}
+		    System.out.println();
+		    
+		}
+		 System.out.println();
 	}
 
 }
