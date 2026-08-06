@@ -11,14 +11,23 @@ public class Minesweeper {
 		// Grille affichée au joueur
 		int[][] visibleGrid = createGrid(6, 12);
 		initializeVisibleGrid(visibleGrid);
-		displayGrid(visibleGrid);
 		
 		Scanner userInput = new Scanner(System.in);
 		
-		int[] coordinates = askCoordinates(userInput, gameGrid);
+		// Début du jeu
+		boolean gameOver = false;
+		while (!gameOver) {
+			displayGrid(visibleGrid);
+			// Demande les coordonnées de la case à jouer
+			int[] coordinates = askCoordinates(userInput, gameGrid);
+			
+			int rowCase = coordinates[0];
+		    int columnCase = coordinates[1];
 
-		System.out.println("Ligne : " + coordinates[0]);
-		System.out.println("Colonne : " + coordinates[1]);
+		    // Met à jour la grille visible et l'affiche
+		    visibleGrid[rowCase][columnCase] = gameGrid[rowCase][columnCase];
+		    displayGrid(visibleGrid);
+		}
 		
 		userInput.close();
 	}
@@ -76,7 +85,7 @@ public class Minesweeper {
 	
 	/**
 	 *  Initialise la grille de jeu qui sera affichée
-	 *  @param grid Grille de jeu affichée
+	 *  @param visibleGrid Grille affichée au joueur
 	 */
 	public static void initializeVisibleGrid(int[][] visibleGrid) {
 		// On met -2 dans toutes les cases
@@ -134,7 +143,7 @@ public class Minesweeper {
 		int column = 0;
 		
 		while (!validInput) {
-			System.out.println("Choisissez une case à découvrir. Réponse au format A10 par ex.");
+			System.out.println("Choisissez une case à découvrir. Réponse au format A10 par exemple.");
 			String chosenCase = userInput.nextLine().toUpperCase();
 			
 			boolean inputIsCorrect = true;
