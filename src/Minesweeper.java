@@ -7,6 +7,8 @@ public class Minesweeper {
 		// Grille de jeu
 		int[][] gameGrid = createGrid(6, 12);
 		placeBombs(9, gameGrid);
+		System.out.println("Grille de jeu");
+		displayGrid(gameGrid);
 		
 		// Grille affichée au joueur
 		int[][] visibleGrid = createGrid(6, 12);
@@ -17,7 +19,9 @@ public class Minesweeper {
 		// Début du jeu
 		boolean gameOver = false;
 		while (!gameOver) {
+			System.out.println("Grille de jeu JOUEUR");
 			displayGrid(visibleGrid);
+			
 			// Demande les coordonnées de la case à jouer
 			int[] coordinates = askCoordinates(userInput, gameGrid);
 			
@@ -26,9 +30,16 @@ public class Minesweeper {
 
 		    // Met à jour la grille visible et l'affiche
 		    visibleGrid[rowCase][columnCase] = gameGrid[rowCase][columnCase];
-		    displayGrid(visibleGrid);
+		    
+		    // Vérifie si la case jouée contient une bombe
+		    if (gameGrid[rowCase][columnCase] == -1) {
+		        System.out.println("Vous avez perdu !");
+		        System.out.println("Voilà où étaient les bombes : ");
+		        displayGrid(gameGrid);
+		        gameOver = true;
+		    }
 		}
-		
+		// TO DO ajouter condition de sortie (mise à jour de gameOver
 		userInput.close();
 	}
 	
@@ -120,6 +131,8 @@ public class Minesweeper {
 				    System.out.printf("%4s", "?");
 				} else if (grid[row][column] == -1) {
 					System.out.printf("%4s", "*");
+				} else if (grid[row][column] == 0) {
+					System.out.printf("%4s", ".");
 				} else {
 					System.out.printf("%4s", (grid[row][column]));
 				}
