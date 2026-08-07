@@ -34,14 +34,19 @@ public class Minesweeper {
 				System.out.println("Voilà où étaient les bombes : ");
 				displayGrid(gameGrid);
 				gameOver = true;
-				// Si la case jouée ne contient pas de bombe
+				
+			// Si la case jouée ne contient pas de bombe
 			} else {
 				int bombsAround = checkCellsAround(gameGrid, rowCase, columnCase);
 				visibleGrid[rowCase][columnCase] = bombsAround;
+				if (checkWin(gameGrid, visibleGrid)) {
+					displayGrid(visibleGrid);
+					System.out.println("Bravo, vous avez gagné ! ");
+					gameOver = true;
+				}
 			}
 
 		}
-		// TO DO ajouter condition de sortie (mise à jour de gameOver
 		userInput.close();
 	}
 
@@ -252,6 +257,28 @@ public class Minesweeper {
 			}
 		}
 		return bombsAround;
+	}
+	
+	/**
+	 * Vérifie que toutes les cases soient découvertes
+	 * @param gameGrid Grille contenant les bombes
+	 * @param visibleGrid Grille affichée au joueur
+	 * @return Un booléen, true si partie gagnée et sinon false
+	 */
+	public static boolean checkWin(int[][] gameGrid, int[][] visibleGrid) {
+		for (int row = 0; row < gameGrid.length; row++) {
+			for (int column = 0; column < gameGrid[0].length; column++) {	
+				// Ignore les cases contenant une bombe
+				if (gameGrid[row][column] == -1) {
+					continue;
+				} 
+				// Si une case sans bombe est encore cachée, la partie n'est pas gagnée
+				if(visibleGrid[row][column] == -2) {
+						return false;
+				}
+			}
+		}
+		return true;
 	}
 
 }
