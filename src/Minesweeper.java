@@ -4,10 +4,10 @@ import java.util.Scanner;
 public class Minesweeper {
 
 	public static void main(String[] args) {
-		// Grille de jeu
+		// Grille de jeu (à cacher, utile pour test)
 		int[][] gameGrid = createGrid(6, 12);
 		placeBombs(9, gameGrid);
-		System.out.println("Grille de jeu");
+		System.out.println("Grille de jeu utilisée pour test, à cacher ensuite");
 		displayGrid(gameGrid);
 
 		// Grille affichée au joueur
@@ -27,6 +27,13 @@ public class Minesweeper {
 
 			int rowCase = coordinates[0];
 			int columnCase = coordinates[1];
+			
+			// Vérifie si la case a déjà été jouée
+			if (isCellAlreadyPlayed(visibleGrid, rowCase, columnCase)) {
+			    System.out.println("Cette case a déjà été découverte. Choisissez en une autre.");
+			    System.out.println();
+			    continue;
+			}
 
 			// Si la case jouée contient une bombe
 			if (gameGrid[rowCase][columnCase] == -1) {
@@ -229,7 +236,23 @@ public class Minesweeper {
 
 		return new int[] { row, column };
 	}
-
+	
+	/**
+	 * Vérifie si la case a déjà été jouée
+	 * @param visibleGrid Grille affichée au joueur
+	 * @param rowCase Indice de ligne de la case jouée
+	 * @param columnCase Indice de colonne de la case jouée
+	 * @return True si case déjà jouée
+	 */
+	public static boolean isCellAlreadyPlayed(int[][] visibleGrid, int rowCase, int columnCase) {
+		// Si la case est différente de -2, elle a déjà été découverte.
+		if (visibleGrid[rowCase][columnCase] != -2) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	/**
 	 * Vérifie le nombre de bombes autour d'une case
 	 * @param gameGrid Grille contenant les bombes
