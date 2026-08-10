@@ -46,6 +46,7 @@ public class Minesweeper {
 			} else {
 				revealCell(gameGrid, visibleGrid, rowCase, columnCase);
 				if (checkWin(gameGrid, visibleGrid)) {
+					revealBombs(gameGrid, visibleGrid);
 					displayGrid(visibleGrid);
 					System.out.println("Bravo, vous avez gagné ! ");
 					gameOver = true;
@@ -346,6 +347,21 @@ public class Minesweeper {
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * Révèle les bombes dans la grille affichée au joueur
+	 * @param gameGrid Grille contenant les bombes
+	 * @param visibleGrid Grille affichée au joueur
+	 */
+	public static void revealBombs(int[][] gameGrid, int[][] visibleGrid) {
+	    for (int row = 0; row < gameGrid.length; row++) {
+	        for (int column = 0; column < gameGrid[row].length; column++) {
+	            if (gameGrid[row][column] == -1) {
+	                visibleGrid[row][column] = -1;
+	            }
+	        }
+	    }
 	}
 
 }
