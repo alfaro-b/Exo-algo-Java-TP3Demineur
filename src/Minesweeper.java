@@ -1,21 +1,33 @@
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Minesweeper {
 
 	public static void main(String[] args) {
+
+		Scanner userInput = new Scanner(System.in);
+
+		// Demande les dimensions de la grille de jeu
+		int[] dimensions = askDimensions(userInput);
+		int rows = dimensions[0];
+		int columns = dimensions[1];
+
+		// Calcule le nombre de bombes en fonction de la difficulté choisie
+		int bombsNumber = askDifficulty(userInput, rows, columns);
+
 		// Grille de jeu (à cacher, utile pour test)
-		int[][] gameGrid = createGrid(6, 12);
-		placeBombs(9, gameGrid);
+		int[][] gameGrid = createGrid(rows, columns);
+		placeBombs(bombsNumber, gameGrid);
 		System.out.println("Grille de jeu utilisée pour test, à cacher ensuite");
 		displayGrid(gameGrid);
 
 		// Grille affichée au joueur
-		int[][] visibleGrid = createGrid(6, 12);
+		int[][] visibleGrid = createGrid(rows, columns);
 		initializeVisibleGrid(visibleGrid);
+		System.out.println(bombsNumber + " bombes sont cachées, à vous de les trouver.");
 
-		Scanner userInput = new Scanner(System.in);
-
+		
 		// Début du jeu
 		boolean gameOver = false;
 		while (!gameOver) {
@@ -27,12 +39,12 @@ public class Minesweeper {
 
 			int rowCase = coordinates[0];
 			int columnCase = coordinates[1];
-			
+
 			// Vérifie si la case a déjà été jouée
 			if (isCellAlreadyPlayed(visibleGrid, rowCase, columnCase)) {
-			    System.out.println("Cette case a déjà été découverte. Choisissez en une autre.");
-			    System.out.println();
-			    continue;
+				System.out.println("Cette case a déjà été découverte. Choisissez en une autre.");
+				System.out.println();
+				continue;
 			}
 
 			// Si la case jouée contient une bombe
@@ -41,8 +53,8 @@ public class Minesweeper {
 				System.out.println("Voilà où étaient les bombes : ");
 				displayGrid(gameGrid);
 				gameOver = true;
-				
-			// Si la case jouée ne contient pas de bombe
+
+				// Si la case jouée ne contient pas de bombe
 			} else {
 				revealCell(gameGrid, visibleGrid, rowCase, columnCase);
 				if (checkWin(gameGrid, visibleGrid)) {
@@ -58,6 +70,103 @@ public class Minesweeper {
 	}
 
 	// =================== MÉTHODES ===================
+
+	/**
+	 * Demande la taille de la grille
+	 * 
+	 * @param rows    Nombre de lignes
+	 * @param columns Nombre de colonnes
+	 * @return Tableau d'entiers avec nombre de lignes et de colonnes
+	 */
+	public static int[] askDimensions(Scanner userInput) {
+		int rows = 0;
+		int columns = 0;
+		
+		System.out.println("Choisissez les dimensions de la grille de jeu.");
+		    
+			while (rows < 6 || rows > 26) {
+				System.out.println("Combien de lignes doit comporter la grille? Saisissez un nombre entre 6 et 26: ");
+				if (userInput.hasNextInt()) {
+			        rows = userInput.nextInt();
+			        userInput.nextLine();
+
+			        if (rows < 6 || rows > 26) {
+			            System.out.println("Le nombre doit être compris entre 6 et 26.");
+			        }
+				} else {
+					System.out.println("Vous devez saisir un nombre entier.");
+					userInput.nextLine(); // retire la saisie incorrecte
+				}
+			}		
+		
+			while (columns < 12 || columns > 52) {
+				System.out.println("Combien de colonnes doit comporter la grille? Saisissez un nombre entre 12 et 52: ");
+				if (userInput.hasNextInt()) {
+					columns = userInput.nextInt();
+					userInput.nextLine();
+					if (columns < 12 || columns > 52) {
+						System.out.println("Le nombre doit être compris entre 12 et 52.");
+					}
+				} else {
+					System.out.println("Vous devez saisir un nombre entier.");
+					userInput.nextLine(); // retire la saisie incorrecte
+				}
+			}
+		int[] dimensions = {rows, columns};
+		
+		return dimensions;
+	}
+
+	/**
+	 * Demande le niveau de difficulté
+	 * 
+	 * @param rows    Nombre de lignes
+	 * @param columns Nombre de colonnes
+	 * @return Le nombre de bombes en fonction de la difficulté choisie et de la taille de la grille de jeu
+	 */
+	public static int askDifficulty(Scanner userInput, int rows, int columns) {
+
+		boolean validInput = false;
+		int difficulty = 0;
+
+		while (!validInput) {
+			System.out.println("Choisissez un niveau de difficulté :");
+			System.out.println("1 - Facile");
+			System.out.println("2 - Moyen");
+			System.out.println("3 - Difficile");
+
+			if (userInput.hasNextInt()) {
+				difficulty = userInput.nextInt();
+				userInput.nextLine();
+
+				if (difficulty > 3 || difficulty < 1) {
+					System.out.println("Saisie invalide. Choisissez 1, 2 ou 3.");
+				} else {
+					validInput = true;
+				}
+			} else {
+				System.out.println("Vous devez saisir un nombre entier.");
+			    userInput.nextLine();
+			}
+		}
+
+		int bombsNumber;
+
+		switch (difficulty) {
+		case 1:
+			bombsNumber = rows * columns / 10;
+			break;
+		case 2:
+			bombsNumber = rows * columns / 6;
+			break;
+		case 3:
+			bombsNumber = rows * columns / 4;
+			break;
+		default:
+			bombsNumber = rows * columns / 10;
+		}
+		return bombsNumber;
+	}
 
 	/**
 	 * Crée la grille de jeu
@@ -236,12 +345,13 @@ public class Minesweeper {
 
 		return new int[] { row, column };
 	}
-	
+
 	/**
 	 * Vérifie si la case a déjà été jouée
+	 * 
 	 * @param visibleGrid Grille affichée au joueur
-	 * @param rowCase Indice de ligne de la case jouée
-	 * @param columnCase Indice de colonne de la case jouée
+	 * @param rowCase     Indice de ligne de la case jouée
+	 * @param columnCase  Indice de colonne de la case jouée
 	 * @return True si case déjà jouée
 	 */
 	public static boolean isCellAlreadyPlayed(int[][] visibleGrid, int rowCase, int columnCase) {
@@ -252,11 +362,12 @@ public class Minesweeper {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Vérifie le nombre de bombes autour d'une case
-	 * @param gameGrid Grille contenant les bombes
-	 * @param rowCase Indice de ligne de la case jouée
+	 * 
+	 * @param gameGrid   Grille contenant les bombes
+	 * @param rowCase    Indice de ligne de la case jouée
 	 * @param columnCase Indice de colonne de la case jouée
 	 * @return Nombre de bombes dans les cases adjacentes
 	 */
@@ -281,28 +392,29 @@ public class Minesweeper {
 		}
 		return bombsAround;
 	}
-	
 
 	/**
 	 * Révèle les cases voisines
-	 * @param gameGrid Grille contenant les bombes
-	 * @param rowCase Indice de ligne de la case jouée
+	 * 
+	 * @param gameGrid   Grille contenant les bombes
+	 * @param rowCase    Indice de ligne de la case jouée
 	 * @param columnCase Indice de colonne de la case jouée
 	 */
-	public static void revealCell(int[][] gameGrid, int[][] visibleGrid,int rowCase, int columnCase) {
+	public static void revealCell(int[][] gameGrid, int[][] visibleGrid, int rowCase, int columnCase) {
 		// Si la case est déjà découverte, on arrête cette branche.
 		if (isCellAlreadyPlayed(visibleGrid, rowCase, columnCase)) {
-		    return;
+			return;
 		}
 		// Compte les bombes autour et découvre la case.
 		int bombsAround = checkCellsAround(gameGrid, rowCase, columnCase);
 		visibleGrid[rowCase][columnCase] = bombsAround;
-		
-		// Si cette case a au moins une bombe autour, on la découvre mais on ne propage pas plus loin.
+
+		// Si cette case a au moins une bombe autour, on la découvre mais on ne propage
+		// pas plus loin.
 		if (bombsAround != 0) {
 			return;
 		}
-		
+
 		// Si aucune bombe autour, on parcourt les cases adjacentes.
 		for (int row = rowCase - 1; row <= rowCase + 1; row++) {
 			for (int column = columnCase - 1; column <= columnCase + 1; column++) {
@@ -318,50 +430,52 @@ public class Minesweeper {
 					// Ne découvre jamais une bombe
 					if (gameGrid[row][column] == -1) {
 						continue;
-						}
-					
+					}
+
 					// Découvre la case voisine
 					revealCell(gameGrid, visibleGrid, row, column);
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Vérifie que toutes les cases soient découvertes
-	 * @param gameGrid Grille contenant les bombes
+	 * 
+	 * @param gameGrid    Grille contenant les bombes
 	 * @param visibleGrid Grille affichée au joueur
 	 * @return Un booléen, true si partie gagnée et sinon false
 	 */
 	public static boolean checkWin(int[][] gameGrid, int[][] visibleGrid) {
 		for (int row = 0; row < gameGrid.length; row++) {
-			for (int column = 0; column < gameGrid[0].length; column++) {	
+			for (int column = 0; column < gameGrid[0].length; column++) {
 				// Ignore les cases contenant une bombe
 				if (gameGrid[row][column] == -1) {
 					continue;
-				} 
+				}
 				// Si une case sans bombe est encore cachée, la partie n'est pas gagnée
-				if(visibleGrid[row][column] == -2) {
-						return false;
+				if (visibleGrid[row][column] == -2) {
+					return false;
 				}
 			}
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Révèle les bombes dans la grille affichée au joueur
-	 * @param gameGrid Grille contenant les bombes
+	 * 
+	 * @param gameGrid    Grille contenant les bombes
 	 * @param visibleGrid Grille affichée au joueur
 	 */
 	public static void revealBombs(int[][] gameGrid, int[][] visibleGrid) {
-	    for (int row = 0; row < gameGrid.length; row++) {
-	        for (int column = 0; column < gameGrid[row].length; column++) {
-	            if (gameGrid[row][column] == -1) {
-	                visibleGrid[row][column] = -1;
-	            }
-	        }
-	    }
+		for (int row = 0; row < gameGrid.length; row++) {
+			for (int column = 0; column < gameGrid[row].length; column++) {
+				if (gameGrid[row][column] == -1) {
+					visibleGrid[row][column] = -1;
+				}
+			}
+		}
 	}
 
 }
