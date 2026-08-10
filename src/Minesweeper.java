@@ -44,8 +44,7 @@ public class Minesweeper {
 				
 			// Si la case jouée ne contient pas de bombe
 			} else {
-				int bombsAround = checkCellsAround(gameGrid, rowCase, columnCase);
-				visibleGrid[rowCase][columnCase] = bombsAround;
+				revealCell(gameGrid, visibleGrid, rowCase, columnCase);
 				if (checkWin(gameGrid, visibleGrid)) {
 					displayGrid(visibleGrid);
 					System.out.println("Bravo, vous avez gagné ! ");
@@ -280,6 +279,51 @@ public class Minesweeper {
 			}
 		}
 		return bombsAround;
+	}
+	
+
+	/**
+	 * Révèle les cases voisines
+	 * @param gameGrid Grille contenant les bombes
+	 * @param rowCase Indice de ligne de la case jouée
+	 * @param columnCase Indice de colonne de la case jouée
+	 */
+	public static void revealCell(int[][] gameGrid, int[][] visibleGrid,int rowCase, int columnCase) {
+		// Si la case est déjà découverte, on arrête cette branche.
+		if (isCellAlreadyPlayed(visibleGrid, rowCase, columnCase)) {
+		    return;
+		}
+		// Compte les bombes autour et découvre la case.
+		int bombsAround = checkCellsAround(gameGrid, rowCase, columnCase);
+		visibleGrid[rowCase][columnCase] = bombsAround;
+		
+		// Si cette case a au moins une bombe autour, on la découvre mais on ne propage pas plus loin.
+		if (bombsAround != 0) {
+			return;
+		}
+		
+		// Si aucune bombe autour, on parcourt les cases adjacentes.
+		for (int row = rowCase - 1; row <= rowCase + 1; row++) {
+			for (int column = columnCase - 1; column <= columnCase + 1; column++) {
+
+				// Vérifie que la case existe dans la grille
+				if (row >= 0 && row < gameGrid.length && column >= 0 && column < gameGrid[0].length) {
+
+					// Ignore la case actuelle
+					if (row == rowCase && column == columnCase) {
+						continue;
+					}
+
+					// Ne découvre jamais une bombe
+					if (gameGrid[row][column] == -1) {
+						continue;
+						}
+					
+					// Découvre la case voisine
+					revealCell(gameGrid, visibleGrid, row, column);
+				}
+			}
+		}
 	}
 	
 	/**
